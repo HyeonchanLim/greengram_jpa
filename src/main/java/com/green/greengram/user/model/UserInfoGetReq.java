@@ -2,6 +2,7 @@ package com.green.greengram.user.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -10,6 +11,7 @@ import java.beans.ConstructorProperties;
 @Getter
 @Schema(title = "유저 정보 GET 요청")
 @ToString
+@EqualsAndHashCode
 public class UserInfoGetReq {
     @JsonIgnore
     private long signedUserId;

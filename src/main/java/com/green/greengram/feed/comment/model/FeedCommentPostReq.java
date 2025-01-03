@@ -2,6 +2,7 @@ package com.green.greengram.feed.comment.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,6 +11,7 @@ import lombok.ToString;
 @Setter
 @Schema(title = "피드 댓글 등록 요청")
 @ToString
+@EqualsAndHashCode
 public class FeedCommentPostReq {
     @JsonIgnore
     private long feedCommentId;

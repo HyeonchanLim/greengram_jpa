@@ -39,6 +39,9 @@ class FeedLikeServiceTest {
         givenParam.setUserId(SIGNED_USER_ID_3);
         givenParam.setFeedId(FEED_ID_8);
         given(feedLikeMapper.delFeedLike(givenParam)).willReturn(0);
+        // 아무 데이터 입력 없으면 자동으로 default 0 리턴
+        // given 설정 -> givenParam 에 데이터 입력 이상하게 받으면 예외처리 실행
+        // insert 는 0이 넘어올 일이 없음 그러니 1만 생각해도 ㄱㅊ
         given(feedLikeMapper.insFeedLike(givenParam)).willReturn(1);
 
         FeedLikeReq actualParam1 = new FeedLikeReq();
