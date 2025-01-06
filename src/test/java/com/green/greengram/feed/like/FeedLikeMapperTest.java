@@ -37,6 +37,8 @@ class FeedLikeMapperTest {
         static final long FEED_ID_5 = 5L;
         static final long USER_ID_2 = 2L;
 
+
+
         static final FeedLikeReq existedData = new FeedLikeReq();
         static final FeedLikeReq notExistedData = new FeedLikeReq();
 
