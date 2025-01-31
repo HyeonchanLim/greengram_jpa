@@ -2,20 +2,13 @@ package com.green.greengram.user.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
-@Setter
 @ToString
 @EqualsAndHashCode
+@AllArgsConstructor
 public class UserSignUpReq {
-    @JsonIgnore
-    private long userId;
-    @JsonIgnore
-    private String pic;
 
     @Schema(description = "유저 아이디", example = "mic", requiredMode = Schema.RequiredMode.REQUIRED)
     private String uid;

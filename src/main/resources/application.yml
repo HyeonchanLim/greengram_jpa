@@ -21,12 +21,22 @@ spring:
     name: GreenGramVer2
   datasource:
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:mariadb://localhost/greengram_ver3
+    url: jdbc:log4jdbc:mariadb://localhost/greengram_jpa
     username: root
     password: green502
   jackson:
     default-property-inclusion: non_null #응답 JSON을 만들 때 null인 속성은 제외한다.
-
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: create #entity 를 서버 기동때마다 drop 후 create한다.
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 50
+        format_sql: true #로그 찍을 때 보기 편하게 포맷팅
+        order_updates: true #JPA Batch 작업
+    show-sql: true #JPA 가 만든 쿼리문 로그에 출력 - format_sql 과 연동되면서 쿼리문 생성 -> 보기 좋도록 포맷팅 하는 방식
   servlet:
     multipart:
       max-file-size: 15MB

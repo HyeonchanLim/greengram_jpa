@@ -8,9 +8,9 @@ spring:
     password: green502
   sql:
     init:
-      mode: always
+      mode: never
+
       #never 로 안되게 만들 수 있음 , always 는 항상 롤백 유지
       #resources 아래에 있는
-      #schema.sql (DB 생성 , Table 생성 DDL)
       #data.sql (데이터 insert DML) 파일을 프로젝트(테스트) 시작 시 항상 실행한다
       # 테스트 끝나면 롤백 해줌
