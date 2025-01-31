@@ -12,5 +12,5 @@ spring:
 
       #never 로 안되게 만들 수 있음 , always 는 항상 롤백 유지
       #resources 아래에 있는
-      #data.sql (데이터 insert DML) 파일을 프로젝트(테스트) 시작 시 항상 실행한다
+      #data.sql은  (데이터 insert DML) 파일을 프로젝트(테스트) 시작 시 항상 실행한다
       # 테스트 끝나면 롤백 해줌

@@ -4,6 +4,8 @@ import com.green.greengram.common.MyFileUtils;
 import com.green.greengram.common.exception.CustomException;
 import com.green.greengram.common.exception.FeedErrorCode;
 import com.green.greengram.config.security.AuthenticationFacade;
+import com.green.greengram.entity.Feed;
+import com.green.greengram.entity.User;
 import com.green.greengram.feed.comment.FeedCommentMapper;
 import com.green.greengram.feed.comment.model.FeedCommentDto;
 import com.green.greengram.feed.comment.model.FeedCommentGetReq;
@@ -34,17 +36,28 @@ public class FeedService {
     private final FeedCommentMapper feedCommentMapper;
     private final MyFileUtils myFileUtils;
     private final AuthenticationFacade authenticationFacade;
+    private final FeedRepository feedRepository;
 
     @Transactional
     //자동 커밋 종료
     public FeedPostRes postFeed(List<MultipartFile> pics, FeedPostReq p) {
-        p.setWriterUserId(authenticationFacade.getSignedUserId());
-        int result = feedMapper.insFeed(p);
-        if(result == 0) {
-            throw new CustomException(FeedErrorCode.FAIL_TO_REG);
-        }
+        User signedUserId = new User();
+        signedUserId.setUserId(authenticationFacade.getSignedUserId());
+
+        Feed feed = new Feed();
+        feed.setUser(signedUserId);
+        feed.setContents(p.getContents());
+        feed.setLocation(p.getLocation());
+
+
+//        int result = feedMapper.insFeed(p);
+//        if(result == 0) {
+//            throw new CustomException(FeedErrorCode.FAIL_TO_REG);
+//        }
+        feedRepository.save(feed);
+
         // --------------- 파일 등록
-        long feedId = p.getFeedId();
+        long feedId = feed.getFeedId();
 
         //저장 폴더 만들기, 저장위치/feed/${feedId}/파일들을 저장한다.
         String middlePath = String.format("feed/%d", feedId);
