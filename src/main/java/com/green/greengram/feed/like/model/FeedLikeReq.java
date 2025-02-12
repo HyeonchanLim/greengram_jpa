@@ -19,5 +19,4 @@ public class FeedLikeReq {
     @JsonIgnore
     @Positive
     private long userId;
-
 }

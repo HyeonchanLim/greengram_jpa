@@ -3,7 +3,6 @@ package com.green.greengram.common.exception;
 import com.green.greengram.common.model.ResultResponse;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.validation.FieldError;
 

@@ -14,10 +14,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.embedded.netty.NettyWebServer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -48,8 +48,7 @@ public class UserService {
         user.setUpw(hashedPassword);
         user.setPic(savedPicName);
 
-
-//        int result = mapper.insUser(p);
+        //int result = mapper.insUser(p);
         userRepository.save(user);
 
         if(pic == null) {
@@ -75,7 +74,7 @@ public class UserService {
     public UserSignInRes postSignIn(UserSignInReq p, HttpServletResponse response) {
         User user = userRepository.findByUid(p.getUid());
 //        UserSignInRes res = mapper.selUserByUid(p.getUid());
-        if( user == null || !passwordEncoder.matches(p.getUpw(), user.getUpw())) {
+        if( user == null || !passwordEncoder.matches(p.getUpw(), user.getUpw()) ) {
             throw new CustomException(UserErrorCode.INCORRECT_ID_PW);
         }
         /*
@@ -88,14 +87,17 @@ public class UserService {
         jwtUser.getRoles().add("ROLE_USER");
         jwtUser.getRoles().add("ROLE_ADMIN");
 
-        String accessToken = tokenProvider.generateToken(jwtUser, Duration.ofMinutes(1));
+        String accessToken = tokenProvider.generateToken(jwtUser, Duration.ofHours(8));
         String refreshToken = tokenProvider.generateToken(jwtUser, Duration.ofDays(15));
 
         //refreshToken은 쿠키에 담는다.
         int maxAge = 1_296_000; //15 * 24 * 60 * 60, 15일의 초(second)값
         cookieUtils.setCookie(response, "refreshToken", refreshToken, maxAge);
 
-        return new UserSignInRes(user.getUserId(),user.getNickName(),user.getPic(),accessToken);
+        return new UserSignInRes(user.getUserId()
+                , user.getNickName()
+                , user.getPic()
+                , accessToken);
     }
 
     public UserInfoGetRes getUserInfo(UserInfoGetReq p) {

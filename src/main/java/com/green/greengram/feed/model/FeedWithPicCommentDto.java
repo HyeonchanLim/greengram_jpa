@@ -7,9 +7,8 @@ import java.util.List;
 
 @Getter
 @Builder
-@NoArgsConstructor // 기본생성자 - 순서 지켜야함
-@AllArgsConstructor // 순서 상관없이 사용 가능
-// Builder 사용 -> 위의 어노테이션 2개 써줘야 함
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 public class FeedWithPicCommentDto {
     private long feedId;

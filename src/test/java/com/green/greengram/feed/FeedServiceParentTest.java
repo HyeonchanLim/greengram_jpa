@@ -10,14 +10,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class FeedServiceParentTest {
-    @Mock FeedMapper feedMapper;
-    @Mock FeedPicMapper feedPicMapper;
-    @Mock  FeedCommentMapper feedCommentMapper;
-    @Mock  MyFileUtils myFileUtils;
-    @Mock  AuthenticationFacade authenticationFacade;
-    @InjectMocks FeedService feedService;
+    @Mock protected FeedMapper feedMapper;
+    @Mock protected FeedPicMapper feedPicMapper;
+    @Mock protected FeedCommentMapper feedCommentMapper;
+    @Mock protected MyFileUtils myFileUtils;
+    @Mock protected AuthenticationFacade authenticationFacade;
+    @InjectMocks protected FeedService feedService;
 
-    final long FEED_ID_10 = 10L;
-    final long SIGNED_USER_ID = 3L;
-    final String LOCATION = "테스트 위치";
+    protected final long FEED_ID_10 = 10L;
+    protected final long SIGNED_USER_ID = 3L;
+    protected final String LOCATION = "테스트 위치";
 }

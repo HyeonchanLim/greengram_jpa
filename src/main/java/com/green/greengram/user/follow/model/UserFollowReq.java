@@ -12,10 +12,10 @@ import java.beans.ConstructorProperties;
 
 @Getter
 @ToString
-@EqualsAndHashCode // 이게 있어야 들어오는 값이랑 비교해서 동등성 체크 가능
+@EqualsAndHashCode
 public class UserFollowReq {
     @JsonIgnore
-    @Setter // 특정 멤버필드만 setter 로 지정 가능
+    @Setter
     private long fromUserId;
 
     @JsonProperty("to_user_id")
@@ -26,6 +26,4 @@ public class UserFollowReq {
     public UserFollowReq(long toUserId) {
         this.toUserId = toUserId;
     }
-
-
 }

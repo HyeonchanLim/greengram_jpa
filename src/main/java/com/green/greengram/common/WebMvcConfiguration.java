@@ -3,6 +3,7 @@ package com.green.greengram.common;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerTypePredicate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -10,9 +11,8 @@ import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
-import org.springframework.core.io.Resource;
+
 import java.io.IOException;
-import java.util.Map;
 
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
@@ -35,7 +35,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
         //새로고침시 화면이 나타날 수 있도록 세팅
         registry.addResourceHandler("/**")
-                .addResourceLocations("classpath:/static/**")
+                .addResourceLocations("classpath:/static/")
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver() {
                     @Override

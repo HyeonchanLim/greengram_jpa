@@ -3,17 +3,19 @@ package com.green.greengram.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
 @Setter
-public class FeedPic extends CreatedAt{
-    @EmbeddedId // 이렇게 하면 복합키가 됨
+public class FeedPic extends CreatedAt {
+    @EmbeddedId
     private FeedPicIds feedPicIds;
 
     @ManyToOne
-    @MapsId("feedId") // 관계 연결을 위해서 속성명 작성 
+    @MapsId("feedId")
     @JoinColumn(name = "feed_id")
+    @OnDelete(action = OnDeleteAction.CASCADE) //단방향 상태에서 on delete cascade(DDL) 설정
     private Feed feed;
-
 }

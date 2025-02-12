@@ -12,7 +12,6 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
-
 public class FeedGetRes {
     @Schema(title = "피드 PK")
     private long feedId;

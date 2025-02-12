@@ -1,31 +1,17 @@
 package com.green.greengram.feed.like;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.green.greengram.common.model.ResultResponse;
-import com.green.greengram.config.jwt.JwtProperties;
-import com.green.greengram.config.jwt.TokenAuthenticationFilter;
-import com.green.greengram.config.jwt.TokenProvider;
-import com.green.greengram.config.security.WebSecurityConfig;
 import com.green.greengram.feed.like.model.FeedLikeReq;
-import org.apache.catalina.security.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,8 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(
-        controllers = FeedLikeController.class
-        , excludeAutoConfiguration = SecurityAutoConfiguration.class
+    controllers = FeedLikeController.class
+  , excludeAutoConfiguration = SecurityAutoConfiguration.class
 )
 class FeedLikeControllerTest {
     @Autowired ObjectMapper objectMapper; //JSON사용
@@ -47,7 +33,7 @@ class FeedLikeControllerTest {
     FeedLikeTestCommon common;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         common = new FeedLikeTestCommon(objectMapper);
     }
 
@@ -63,38 +49,18 @@ class FeedLikeControllerTest {
         feedLikeToggle(0);
     }
 
-
     private void feedLikeToggle(final int result) throws Exception {
         FeedLikeReq givenParam = common.getGivenParam(feedId_2);
-
         given(feedLikeService.feedLikeToggle(givenParam)).willReturn(result);
 
-        ResultActions resultActions = mockMvc.perform(get(BASE_URL).queryParams(common.getParameter(feedId_2)));
+        ResultActions resultActions = mockMvc.perform(  get(BASE_URL).queryParams(common.getParameter(feedId_2))  );
 
         String expectedResJson = common.getExpectedResJson(result);
         resultActions.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().json(expectedResJson));
+                     .andExpect(status().isOk())
+                     .andExpect(content().json(expectedResJson));
 
         verify(feedLikeService).feedLikeToggle(givenParam);
     }
-    private MultiValueMap<String, String> getParameter() {
-        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>(1);
-        queryParams.add("feedId", String.valueOf(feedId_2));
-        return queryParams;
-    }
 
-    private FeedLikeReq getGivenParam() {
-        FeedLikeReq givenParam = new FeedLikeReq();
-        givenParam.setFeedId(feedId_2);
-        return givenParam;
-    }
-
-    private String getExpectedResJson(int result) throws Exception {
-        ResultResponse expectedRes = ResultResponse.<Integer>builder()
-                .resultMessage(result == 0 ? "좋아요 취소" : "좋아요 등록")
-                .resultData(result)
-                .build();
-        return objectMapper.writeValueAsString(expectedRes);
-    }
 }

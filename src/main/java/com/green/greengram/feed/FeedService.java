@@ -5,13 +5,14 @@ import com.green.greengram.common.exception.CustomException;
 import com.green.greengram.common.exception.FeedErrorCode;
 import com.green.greengram.config.security.AuthenticationFacade;
 import com.green.greengram.entity.Feed;
+import com.green.greengram.entity.FeedPic;
+import com.green.greengram.entity.FeedPicIds;
 import com.green.greengram.entity.User;
 import com.green.greengram.feed.comment.FeedCommentMapper;
 import com.green.greengram.feed.comment.model.FeedCommentDto;
 import com.green.greengram.feed.comment.model.FeedCommentGetReq;
 import com.green.greengram.feed.comment.model.FeedCommentGetRes;
 import com.green.greengram.feed.model.*;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,18 +38,17 @@ public class FeedService {
     private final MyFileUtils myFileUtils;
     private final AuthenticationFacade authenticationFacade;
     private final FeedRepository feedRepository;
+    private final FeedPicRepository feedPicRepository;
 
-    @Transactional
-    //자동 커밋 종료
+    @Transactional //자동 커밋 종료
     public FeedPostRes postFeed(List<MultipartFile> pics, FeedPostReq p) {
-        User signedUserId = new User();
-        signedUserId.setUserId(authenticationFacade.getSignedUserId());
+        User signedUser = new User();
+        signedUser.setUserId(authenticationFacade.getSignedUserId());
 
         Feed feed = new Feed();
-        feed.setUser(signedUserId);
+        feed.setWriterUser(signedUser);
         feed.setContents(p.getContents());
         feed.setLocation(p.getLocation());
-
 
 //        int result = feedMapper.insFeed(p);
 //        if(result == 0) {
@@ -62,6 +62,7 @@ public class FeedService {
         //저장 폴더 만들기, 저장위치/feed/${feedId}/파일들을 저장한다.
         String middlePath = String.format("feed/%d", feedId);
         myFileUtils.makeFolders(middlePath);
+
         //랜덤 파일명 저장용  >> feed_pics 테이블에 저장할 때 사용
         List<String> picNameList = new ArrayList<>(pics.size());
         for(MultipartFile pic : pics) {
@@ -70,6 +71,16 @@ public class FeedService {
             picNameList.add(savedPicName);
             String filePath = String.format("%s/%s", middlePath, savedPicName);
             try {
+                FeedPicIds ids = new FeedPicIds();
+                ids.setFeedId(feedId);
+                ids.setPic(savedPicName);
+
+                FeedPic feedPic = new FeedPic();
+                feedPic.setFeedPicIds(ids);
+                feedPic.setFeed(feed);
+
+                feedPicRepository.save(feedPic);
+
                 myFileUtils.transferTo(pic, filePath);
             } catch (IOException e) {
                 //폴더 삭제 처리
@@ -78,10 +89,10 @@ public class FeedService {
                 throw new CustomException(FeedErrorCode.FAIL_TO_REG);
             }
         }
-        FeedPicDto feedPicDto = new FeedPicDto();
-        feedPicDto.setFeedId(feedId);
-        feedPicDto.setPics(picNameList);
-        int resultPics = feedPicMapper.insFeedPic(feedPicDto);
+//        FeedPicDto feedPicDto = new FeedPicDto();
+//        feedPicDto.setFeedId(feedId);
+//        feedPicDto.setPics(picNameList);
+        //int resultPics = feedPicMapper.insFeedPic(feedPicDto);
 
         return FeedPostRes.builder()
                           .feedId(feedId)
@@ -255,20 +266,35 @@ public class FeedService {
 
 
     @Transactional
-    public int deleteFeed(FeedDeleteReq p) {
-        p.setSignedUserId(authenticationFacade.getSignedUserId());
-        //피드 댓글, 좋아요, 사진 삭제
-        int affectedRowsEtc = feedMapper.delFeedLikeAndFeedCommentAndFeedPic(p);
-        log.info("deleteFeed > affectedRows: {}", affectedRowsEtc);
+    public void deleteFeed(FeedDeleteReq p) {
 
-        //피드 삭제
-        int affectedRowsFeed = feedMapper.delFeed(p);
-        log.info("deleteFeed > affectedRowsFeed: {}", affectedRowsFeed);
+        User signedUser = new User();
 
+        signedUser.setUserId(authenticationFacade.getSignedUserId());
+//        Feed feed = feedRepository.findByFeedIdAndWriterUser(p.getFeedId(), signedUser)
+//                                  .orElseThrow(() -> new CustomException(FeedErrorCode.FAIL_TO_DEL));
+//        feedRepository.delete(feed);
+
+
+        //int affectedRows = feedRepository.deleteByFeedIdAndWriterUser(p.getFeedId(), signedUser);
+        int affectedRows = feedRepository.deleteFeed(p.getFeedId(), authenticationFacade.getSignedUserId());
+        log.info("affectedRows: {}", affectedRows);
+        if(affectedRows == 0) {
+            throw new CustomException(FeedErrorCode.FAIL_TO_DEL);
+        }
+
+//        p.setSignedUserId(authenticationFacade.getSignedUserId());
+//        //피드 댓글, 좋아요, 사진 삭제
+//        int affectedRowsEtc = feedMapper.delFeedLikeAndFeedCommentAndFeedPic(p);
+//        log.info("deleteFeed > affectedRows: {}", affectedRowsEtc);
+//
+//        //피드 삭제
+//        int affectedRowsFeed = feedMapper.delFeed(p);
+//        log.info("deleteFeed > affectedRowsFeed: {}", affectedRowsFeed);
+//
         //피드 사진 삭제 (폴더 삭제)
         String deletePath = String.format("%s/feed/%d", myFileUtils.getUploadPath(), p.getFeedId());
         myFileUtils.deleteFolder(deletePath, true);
 
-        return 1;
     }
 }

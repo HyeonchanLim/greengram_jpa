@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.BindParam;
 @Getter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-
 public class FeedGetReq extends Paging {
     @JsonIgnore
     private long signedUserId;

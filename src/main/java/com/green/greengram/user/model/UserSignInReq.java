@@ -3,14 +3,12 @@ package com.green.greengram.user.model;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Schema(title = "로그인 요청")
-@EqualsAndHashCode
 public class UserSignInReq {
     @Size(min=3, max=30, message = "아이디는 3~30자 사이만 가능합니다.")
     @NotNull(message = "아이디를 입력하셔야 합니다.")

@@ -1,7 +1,7 @@
 package com.green.greengram.common.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
 @Getter

@@ -1,7 +1,10 @@
 package com.green.greengram.feed.comment;
 
 import com.green.greengram.common.model.ResultResponse;
-import com.green.greengram.feed.comment.model.*;
+import com.green.greengram.feed.comment.model.FeedCommentDelReq;
+import com.green.greengram.feed.comment.model.FeedCommentGetReq;
+import com.green.greengram.feed.comment.model.FeedCommentGetRes;
+import com.green.greengram.feed.comment.model.FeedCommentPostReq;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -60,10 +63,10 @@ public class FeedCommentController {
     @DeleteMapping
     public ResultResponse<Integer> delFeedComment(@ParameterObject @ModelAttribute FeedCommentDelReq p) {
         log.info("FeedCommentController > delFeedComment > p: {}", p);
-        int res = service.delFeedComment(p);
+        service.delFeedComment(p);
         return ResultResponse.<Integer>builder()
                 .resultMessage("댓글 삭제가 완료되었습니다.")
-                .resultData(res)
+                .resultData(1)
                 .build();
     }
 
