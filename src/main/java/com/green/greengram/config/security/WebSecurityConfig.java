@@ -1,9 +1,15 @@
 package com.green.greengram.config.security;
 
 //Spring Security 세팅
+import com.green.greengram.common.GlobalOauth2;
 import com.green.greengram.config.jwt.JwtAuthenticationEntryPoint;
 import com.green.greengram.config.jwt.TokenAuthenticationFilter;
 import com.green.greengram.config.jwt.TokenProvider;
+import com.green.greengram.config.security.oauth.MyOauth2UserService;
+import com.green.greengram.config.security.oauth.Oauth2AuthenticationCheckRedirectUriFilter;
+import com.green.greengram.config.security.oauth.Oauth2AuthenticationRequestBasedOnCookieRepository;
+import com.green.greengram.config.security.oauth.Oauth2AuthenticationSuccessHandler;
+import com.green.greengram.config.security.oauth.userInfo.Oauth2AuthenticationFailureHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +18,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -21,6 +28,13 @@ public class WebSecurityConfig {
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
+    //Oauth2
+    private final Oauth2AuthenticationCheckRedirectUriFilter oauth2AuthenticationCheckRedirectUriFilter;
+    private final Oauth2AuthenticationRequestBasedOnCookieRepository repository;
+    private final Oauth2AuthenticationFailureHandler failureHandler;
+    private final Oauth2AuthenticationSuccessHandler successHandler;
+    private final MyOauth2UserService myOauth2UserService;
+    private final GlobalOauth2 globalOauth2;
     //스프링 시큐리티 기능 비활성화 (스프링 시큐리티가 관여하지 않았으면 하는 부분)
 //    @Bean
 //    public WebSecurityCustomizer webSecurityCustomizer() {
@@ -42,6 +56,13 @@ public class WebSecurityConfig {
                 )
                 .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .oauth2Login(oauth2 -> oauth2.authorizationEndpoint(auth -> auth.baseUri(globalOauth2.getBaseUri())
+                                                                            .authorizationRequestRepository(repository) )
+                        .redirectionEndpoint( redirection -> redirection.baseUri("/*/oauth2/code/*")) // BE 가 사용하는 redirectUri , 플랫폼마다 설정할 예정
+                        .userInfoEndpoint(userInfo -> userInfo.userService(myOauth2UserService) )
+                        .successHandler(successHandler)
+                        .failureHandler(failureHandler) )
+                .addFilterBefore(oauth2AuthenticationCheckRedirectUriFilter, OAuth2AuthorizationRequestRedirectFilter.class)
                 .build();
     }
 

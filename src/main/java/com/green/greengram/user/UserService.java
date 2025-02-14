@@ -7,6 +7,7 @@ import com.green.greengram.common.exception.UserErrorCode;
 import com.green.greengram.config.jwt.JwtUser;
 import com.green.greengram.config.jwt.TokenProvider;
 import com.green.greengram.config.security.AuthenticationFacade;
+import com.green.greengram.config.security.SignInProviderType;
 import com.green.greengram.entity.User;
 import com.green.greengram.user.model.*;
 import jakarta.servlet.http.Cookie;
@@ -43,6 +44,7 @@ public class UserService {
         log.info("hashedPassword: {}", hashedPassword);
 
         User user = new User();
+        user.setProviderType(SignInProviderType.LOCAL);
         user.setNickName(p.getNickName());
         user.setUid(p.getUid());
         user.setUpw(hashedPassword);
@@ -72,7 +74,7 @@ public class UserService {
     }
 
     public UserSignInRes postSignIn(UserSignInReq p, HttpServletResponse response) {
-        User user = userRepository.findByUid(p.getUid());
+        User user = userRepository.findByUidAndProviderType(p.getUid() , SignInProviderType.LOCAL);
 //        UserSignInRes res = mapper.selUserByUid(p.getUid());
         if( user == null || !passwordEncoder.matches(p.getUpw(), user.getUpw()) ) {
             throw new CustomException(UserErrorCode.INCORRECT_ID_PW);
@@ -92,7 +94,7 @@ public class UserService {
 
         //refreshToken은 쿠키에 담는다.
         int maxAge = 1_296_000; //15 * 24 * 60 * 60, 15일의 초(second)값
-        cookieUtils.setCookie(response, "refreshToken", refreshToken, maxAge);
+        cookieUtils.setCookie(response, "refreshToken", refreshToken, maxAge,"/api/user/access-token");
 
         return new UserSignInRes(user.getUserId()
                 , user.getNickName()

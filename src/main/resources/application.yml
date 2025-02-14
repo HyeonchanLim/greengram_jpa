@@ -1,3 +1,16 @@
+global:
+  oauth2:
+    base-uri: /oauth2/authorization #FE 소셜 로그인 요청할 때 사용할 주소값
+    # 플랫폼과 통신을 3번 정도 하는데 각 통신들이 하나의 작업을 위한 트랜잭션이라는 것을
+    # 연결시키기 위해 쿠키를 사용한다.
+    authorization-request-cookie-name: oauth2_auth_request # key 값
+    redirect-uri-param-cookie-name: redirect_uri # key 값
+    cookie-expiry-seconds: 180
+    authorized-redirect-uris:
+      - http://localhost:8080/fe/redirect
+      - http://192.168.0.144:5221/fe/redirect
+      - http://112.222.157.156:5221/fe/redirect
+
 const:
   default-page-size: 20
 
@@ -6,24 +19,23 @@ file:
 
 jwt:
   issuer: green@green.kr
-  secret-key: DaeguGreenArtAcademyClass502RoomForJavaSpringBootFightingD23sdfsdf23FDSADFSDFDass502RoomForJavaSprinass502RoomForJavaSprin
-
-
+  secret-key: ${JWT_SECRET_KEY}
 
 mybatis:
   configuration:
     map-underscore-to-camel-case: true #snake_case column 명을 자동으로 camel_case 형으로 변환
   mapper-locations: mappers/**/*.xml
 
-
 spring:
   application:
     name: GreenGramVer2
+  config:
+    import: optional:file:.env # optoinal은 혹시 .env 파일이 없더라도 컴파일 에러가 나진 않도록. file : 파일을 import , .env : 파일명
   datasource:
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:mariadb://localhost/greengram_jpa
-    username: root
-    password: green502
+    url: jdbc:log4jdbc:mariadb://${DEFAULT.DB_URL}
+    username: ${DEFAULT.USERNAME}
+    password: ${DEFAULT.PASSWORD}
   jackson:
     default-property-inclusion: non_null #응답 JSON을 만들 때 null인 속성은 제외한다.
 
@@ -39,8 +51,8 @@ spring:
               - profile
           kakao:
             client-name: Kakao
-            client-id: a
-            client-secret: a
+            client-id: ${SOCIAL.KAKAO.CLIENT_ID}
+            client-secret: ${SOCIAL.KAKAO.SECRET}
             client-authentication-method: client_secret_post #client_id , client_secret 쿼리스트링으로 날아가야 한다.
             authorization-grant-type: authorization_code #권한부여 유형 ( 인가코드 -> access-token 받는 방식 선택)
             redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
@@ -51,6 +63,7 @@ spring:
             scope:
               - profile_nickname
               - profile_image
+
           naver:
             client-name: Naver
             client-id: a
